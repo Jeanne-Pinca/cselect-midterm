@@ -12,11 +12,19 @@ public class LevelAndProgressUI : MonoBehaviour
     [SerializeField] private Slider fillProgressSlider;
     [SerializeField] private TMP_Text fillPercentText;
     [SerializeField] private int particlesToFill = 100;
+    [SerializeField] private float fillGainMultiplier = 0.5f;
+
+    [Header("Deterioration")]
+    [SerializeField] private bool enableDeterioration = true;
+    [SerializeField] private float deteriorationParticlesPerSecond = 2f;
+    [SerializeField] private float deteriorationDelaySeconds = 0.75f;
 
     [Header("Completion")]
     [SerializeField] private Button completionButton;
 
-    private int currentParticles;
+    private float currentParticles;
+    private float lastFillTime;
+    private bool hasReachedFull;
 
     private void Awake()
     {
@@ -29,9 +37,16 @@ public class LevelAndProgressUI : MonoBehaviour
         ResetProgress();
     }
 
+    private void Update()
+    {
+        ApplyDeterioration();
+    }
+
     public void ResetProgress()
     {
-        currentParticles = 0;
+        currentParticles = 0f;
+        lastFillTime = Time.time;
+        hasReachedFull = false;
         RefreshProgressUi();
     }
 
@@ -42,7 +57,20 @@ public class LevelAndProgressUI : MonoBehaviour
             return;
         }
 
-        currentParticles = Mathf.Min(currentParticles + amount, particlesToFill);
+        if (fillGainMultiplier <= 0f)
+        {
+            return;
+        }
+
+        lastFillTime = Time.time;
+        currentParticles = Mathf.Min(currentParticles + (amount * fillGainMultiplier), particlesToFill);
+        RefreshProgressUi();
+    }
+
+    public void CompleteLevel()
+    {
+        currentParticles = Mathf.Max(0f, particlesToFill);
+        lastFillTime = Time.time;
         RefreshProgressUi();
     }
 
@@ -53,7 +81,28 @@ public class LevelAndProgressUI : MonoBehaviour
             return 1f;
         }
 
-        return (float)currentParticles / particlesToFill;
+        return currentParticles / particlesToFill;
+    }
+
+    private void ApplyDeterioration()
+    {
+        if (!enableDeterioration || particlesToFill <= 0 || currentParticles <= 0f || hasReachedFull)
+        {
+            return;
+        }
+
+        if (deteriorationParticlesPerSecond <= 0f)
+        {
+            return;
+        }
+
+        if (deteriorationDelaySeconds > 0f && (Time.time - lastFillTime) < deteriorationDelaySeconds)
+        {
+            return;
+        }
+
+        currentParticles = Mathf.Max(0f, currentParticles - (deteriorationParticlesPerSecond * Time.deltaTime));
+        RefreshProgressUi();
     }
 
     private void UpdateLevelCounter()
@@ -72,6 +121,7 @@ public class LevelAndProgressUI : MonoBehaviour
     private void RefreshProgressUi()
     {
         float progress01 = GetProgress01();
+        hasReachedFull = progress01 >= 1f;
 
         if (fillProgressSlider != null)
         {
@@ -85,7 +135,7 @@ public class LevelAndProgressUI : MonoBehaviour
             fillPercentText.text = $"{Mathf.RoundToInt(progress01 * 100f)}%";
         }
 
-        SetCompletionVisible(progress01 >= 1f);
+        SetCompletionVisible(hasReachedFull);
     }
 
     private void SetCompletionVisible(bool isVisible)

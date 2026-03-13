@@ -1,0 +1,33 @@
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Ll]ogs/
+[Bb]uild/
+[Bb]uilds/
+UserSettings/
+MemoryCaptures/
+
+# Auto-generated VS/JetBrains files
+.vs/
+.idea/
+*.csproj
+*.unityproj
+*.sln.iml
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Unity cache/package files
+Assets/AssetStoreTools*
+Packages/packages-lock.json
+
+# OS/editor noise
+.DS_Store
+Thumbs.db

@@ -9,11 +9,23 @@ EditorBuildSettings:
     path: Assets/Scenes/StartScreen.unity
     guid: fbce890dfd55d7c45a57f5b0ad03fdf7
   - enabled: 1
+    path: Assets/Scenes/StoryScreen.unity
+    guid: 2f26c829f0e8ebe46aae3d17883c859d
+  - enabled: 1
     path: Assets/Scenes/Level1.unity
     guid: b49605710b621bb4e84a9fdc5eb94ca7
   - enabled: 1
     path: Assets/Scenes/Level2.unity
     guid: 1580ee2ede11b444d8e465d9875e2363
+  - enabled: 1
+    path: Assets/Scenes/Level3.unity
+    guid: 8eaaaddf345e776439814a50212aae25
+  - enabled: 1
+    path: Assets/Scenes/Level4.unity
+    guid: 82b8b6a5db40d0142a981fe61c68e1ce
+  - enabled: 1
+    path: Assets/Scenes/Level5.unity
+    guid: 7cf3004c0e0937447813f056510bb3de
   - enabled: 1
     path: Assets/Scenes/WinScreen.unity
     guid: 21ac1f7fead5f064f8a3b55b25cf6c3e
