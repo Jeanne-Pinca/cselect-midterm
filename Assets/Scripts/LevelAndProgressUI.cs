@@ -1,0 +1,121 @@
+using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+public class LevelAndProgressUI : MonoBehaviour
+{
+    [Header("Level Counter")]
+    [SerializeField] private TMP_Text levelCounterText;
+
+    [Header("Fill Progress")]
+    [SerializeField] private Slider fillProgressSlider;
+    [SerializeField] private TMP_Text fillPercentText;
+    [SerializeField] private int particlesToFill = 100;
+
+    [Header("Completion")]
+    [SerializeField] private Button completionButton;
+
+    private int currentParticles;
+
+    private void Awake()
+    {
+        SetCompletionVisible(false);
+    }
+
+    private void Start()
+    {
+        UpdateLevelCounter();
+        ResetProgress();
+    }
+
+    public void ResetProgress()
+    {
+        currentParticles = 0;
+        RefreshProgressUi();
+    }
+
+    public void AddParticles(int amount)
+    {
+        if (amount <= 0)
+        {
+            return;
+        }
+
+        currentParticles = Mathf.Min(currentParticles + amount, particlesToFill);
+        RefreshProgressUi();
+    }
+
+    public float GetProgress01()
+    {
+        if (particlesToFill <= 0)
+        {
+            return 1f;
+        }
+
+        return (float)currentParticles / particlesToFill;
+    }
+
+    private void UpdateLevelCounter()
+    {
+        if (levelCounterText == null)
+        {
+            return;
+        }
+
+        string sceneName = SceneManager.GetActiveScene().name;
+        int trailingNumber = ExtractTrailingNumber(sceneName);
+
+        levelCounterText.text = trailingNumber > 0 ? $"Level {trailingNumber}" : sceneName;
+    }
+
+    private void RefreshProgressUi()
+    {
+        float progress01 = GetProgress01();
+
+        if (fillProgressSlider != null)
+        {
+            fillProgressSlider.minValue = 0f;
+            fillProgressSlider.maxValue = 1f;
+            fillProgressSlider.value = progress01;
+        }
+
+        if (fillPercentText != null)
+        {
+            fillPercentText.text = $"{Mathf.RoundToInt(progress01 * 100f)}%";
+        }
+
+        SetCompletionVisible(progress01 >= 1f);
+    }
+
+    private void SetCompletionVisible(bool isVisible)
+    {
+        if (completionButton != null)
+        {
+            completionButton.gameObject.SetActive(isVisible);
+            completionButton.interactable = isVisible;
+        }
+    }
+
+    private static int ExtractTrailingNumber(string text)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return -1;
+        }
+
+        int end = text.Length - 1;
+        while (end >= 0 && char.IsDigit(text[end]))
+        {
+            end--;
+        }
+
+        if (end == text.Length - 1)
+        {
+            return -1;
+        }
+
+        string numberPart = text.Substring(end + 1);
+        return int.TryParse(numberPart, out int value) ? value : -1;
+    }
+}
